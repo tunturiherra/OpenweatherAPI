@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <title>OPENWEATHERMAP API</title>
+</head>
+<body>
+    <h1>Hae haluamasi kaupungin tämänhetkinen sää:</h1>
+    <form id="weatherForm">
+        <input type="text" id="city" placeholder="Kaupunki" required />
+        <button type="submit">Hae sää</button>
+    </form>
+    <div id="weatherData"></div>
+
+    <script>
+        document.getElementById('weatherForm').addEventListener('submit', fetchWeatherData);
+
+        async function fetchWeatherData(event) {
+            event.preventDefault();
+            const city = document.getElementById('city').value;
+
+            try {
+                // OpenWeatherMap API
+                const apiKey = '0fce43ec3d58059b5842ee420de8b189';
+                const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+
+                // luodaan virheidenkäsittelyä, jos jokin meneekin pieleen.
+                const response = await fetch(url);
+                if (!response.ok) {
+                    alert('Virhe sään tiedoissa');
+                    return;
+                }
+                
+                const data = await response.json();
+                displayWeatherData(data);
+            } catch (error) {
+                console.error('Virhe:', error);
+                alert('Virhe sään tiedoissa');
+            }
+        }
+
+        function displayWeatherData(data) {
+            const weatherDataElement = document.getElementById('weatherData');
+            weatherDataElement.innerHTML = '';
+
+            // Säätiedot näytetään tässä
+            const weatherInfo = `
+                <div>
+                    <h2>Sää kaupungissa ${data.name}</h2>
+                    <p>Lämpötila: ${data.main.temp}°C</p>
+                    <p>Säätila: ${data.weather[0].description}</p>
+                    <p>Tuulen nopeus: ${data.wind.speed} m/s</p>
+                </div>
+            `;
+            weatherDataElement.innerHTML += weatherInfo;
+        }
+    </script>
+</body>
+</html>
